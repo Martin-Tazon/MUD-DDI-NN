@@ -1,23 +1,23 @@
 #! /bin/bash
 
-BASEDIR=$(../../lab_resources/DDI)
-
+BASEDIR=../../lab_resources/DDI
 export PYTHONPATH=$BASEDIR/util #Directory of the DDI data
+export LD_LIBRARY_PATH=/home/martin/mambaforge/envs/mds/nvvm/libdevice:$LD_LIBRARY_PATH
 
 
 if [[ "$*" == *"parse"* ]]; then
    $BASEDIR/util/corenlp-server.sh -quiet true -port 9000 -timeout 15000 &
    sleep 1
 
-   python3 parse_data.py $BASEDIR/data/train train.pck
-   python3 parse_data.py $BASEDIR/data/devel devel.pck
+   python3 parse_data.py $BASEDIR/data/train train
+   python3 parse_data.py $BASEDIR/data/devel devel
    python3 parse_data.py $BASEDIR/data/test  test
    kill `cat /tmp/corenlp-server.running`
 fi
 
 if [[ "$*" == *"train"* ]]; then
     rm -rf model*
-    python3 train.py train.pck devel.pck model
+    XLA_FLAGS=--xla_gpu_cuda_data_dir=/home/martin/mambaforge/envs/mds python3 train.py train.pck devel.pck model
 fi
 
 if [[ "$*" == *"predict"* ]]; then
