@@ -1,0 +1,8 @@
+__pycache__
+corenlp-server.sh
+*.out
+*.pck
+*.idx
+*.stats
+model
+
